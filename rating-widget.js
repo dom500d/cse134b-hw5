@@ -183,13 +183,15 @@ class CurrentWeather extends HTMLElement {
                 let div = document.createElement('div');
                 let another_div = document.createElement('div');
                 image.src = response.properties.periods[0].icon;
-                short_description.style.display = 'inline';
+                // short_description.style.display = 'inline';
                 short_description.innerHTML = response.properties.periods[0].shortForecast +' ' + response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit;
                 let wind_description = document.createElement('p');
                 wind_description.innerHTML = response.properties.periods[0].windSpeed + ' ' + response.properties.periods[0].windDirection; 
                 div.appendChild(image);
                 div.appendChild(another_div);
                 div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                another_div.style.marginLeft = '1vw';
                 div.querySelector('div').appendChild(short_description);
                 div.querySelector('div').appendChild(wind_description);
                 this.shadowRoot.appendChild(div);
