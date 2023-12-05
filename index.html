@@ -37,7 +37,7 @@
         </style>
     </head>
     <body>
-        <rating-widget min="1" max="10" fontsize="3rem">
+        <rating-widget min="1" max="10" data-starsize="3rem" data-starcolor="red" data-headingsize="2rem" data-headingsize="black">
             <form action="https://httpbin.org/post" method="POST">
                 <label for="rating">How satisfied are you?</label>
                 <input type="hidden" name="question" value="How satisfied are you?">
@@ -46,5 +46,8 @@
                 <button type="submit">Submit</button>
             </form>
         </rating-widget>
+        <current-weather>
+            <p>Current Weather Conditions Unavailable</p>
+        </current-weather>
     </body>
 </html>
