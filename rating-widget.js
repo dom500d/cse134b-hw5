@@ -171,8 +171,11 @@ class CurrentWeather extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         let style = document.createElement('style');
-        style.innerText = `:host(#shadow-dom-host) { 
-            display: flex; 
+        style.innerText = `:host { 
+            display: inline-flex; 
+            background-color: var(--rating-widget-background-color, #f2ffd1);
+            border-radius: var(--rating-widget-border-radius, 10px);
+            padding: var(--rating-widget-padding, 10px);
         }
         img {
             height: var(--rating-widget-image-height, 7vh);
@@ -180,10 +183,16 @@ class CurrentWeather extends HTMLElement {
         #container {
             display: flex;
             align-items: center;
+            justify-content: space-evenly;
         }
         #container > div {
             margin-left: 1vw;
-        }`;
+        }
+        #outer-container {
+            display: flex;
+            flex-direction: column;
+        }
+        `;
         this.shadowRoot.appendChild(style);
     }
 
@@ -195,7 +204,11 @@ class CurrentWeather extends HTMLElement {
                 let image = document.createElement('img');
                 let div = document.createElement('div');
                 let another_div = document.createElement('div');
+                let another_another_div = document.createElement('div');
+                let long_description = document.createElement('p');
                 let short_forecast = response.properties.periods[0].shortForecast;
+                image.src = 'sunny.png';
+                image.alt = 'Sunny weather icon';
                 if(short_forecast === 'Sunny') {
                     image.src = 'sunny.png';
                     image.alt = 'Sunny weather icon';
@@ -212,14 +225,20 @@ class CurrentWeather extends HTMLElement {
                     image.src = 'thunder.png';
                     image.alt = 'Thunder weather icon';
                 }
-                div.id = 'container';
+                div.id = 'outer-container';
                 short_description.innerHTML = short_forecast +' ' + response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit;
                 let wind_description = document.createElement('p');
                 wind_description.innerHTML = response.properties.periods[0].windSpeed + ' ' + response.properties.periods[0].windDirection; 
+                long_description.innerHTML = response.properties.periods[0].detailedForecast;
                 div.appendChild(image);
                 div.appendChild(another_div);
-                div.querySelector('div').appendChild(short_description);
-                div.querySelector('div').appendChild(wind_description);
+                another_another_div.appendChild(image);
+                another_another_div.appendChild(another_div);
+                another_div.appendChild(short_description);
+                another_div.appendChild(wind_description);
+                div.appendChild(another_another_div);
+                div.appendChild(long_description);
+                another_another_div.id = 'container';
                 this.shadowRoot.appendChild(div);
             });
         });
