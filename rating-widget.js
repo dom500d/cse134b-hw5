@@ -192,6 +192,10 @@ class CurrentWeather extends HTMLElement {
             display: flex;
             flex-direction: column;
         }
+        p {
+            max-width: 30vw;
+            font-family: var(--weather-widget-font, sans-serif);
+        }
         `;
         this.shadowRoot.appendChild(style);
     }
@@ -226,7 +230,7 @@ class CurrentWeather extends HTMLElement {
                     image.alt = 'Thunder weather icon';
                 }
                 div.id = 'outer-container';
-                short_description.innerHTML = short_forecast +' ' + response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit;
+                short_description.innerHTML = response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit + ', ' + short_forecast;
                 let wind_description = document.createElement('p');
                 wind_description.innerHTML = response.properties.periods[0].windSpeed + ' ' + response.properties.periods[0].windDirection; 
                 long_description.innerHTML = response.properties.periods[0].detailedForecast;
