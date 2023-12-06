@@ -28,16 +28,23 @@
         
         <meta name="robots" content="noindex nofollow">
 
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+
         <script src="rating-widget.js"></script>
         
         <style>
             body {
                 font-family: sans-serif;
+                background-color: antiquewhite;
+            }
+
+            current-weather {
+                --rating-widget-image-height: 10vh;
             }
         </style>
     </head>
     <body>
-        <rating-widget min="1" max="10" data-starsize="3rem" data-starcolor="red" data-headingsize="2rem" data-headingsize="black">
+        <rating-widget min="1" max="5" data-starsize="3rem" data-starcolor="red" data-headingsize="2rem" data-headingsize="black">
             <form action="https://httpbin.org/post" method="POST">
                 <label for="rating">How satisfied are you?</label>
                 <input type="hidden" name="question" value="How satisfied are you?">

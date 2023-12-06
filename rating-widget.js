@@ -30,7 +30,8 @@ class RatingWidget extends HTMLElement {
                                 font-size: ${this.heading_size};
                                 color: ${this.heading_color};
                                 margin: 0;
-                            }`;
+                            }
+                            `;
         this.shadowRoot.append(style);
         this.shadowRoot.addEventListener('click', this.selectRating);
         this.shadowRoot.addEventListener('mouseover', this.hoverRating);
@@ -115,7 +116,7 @@ class RatingWidget extends HTMLElement {
             // headers.append('Content-Type', 'application/x-www-form-urlencoded');
             form_data.append('question', 'How satisfied are you?');
             form_data.append('rating', this.selected_rating);
-            console.log(form_data);
+            // console.log(form_data);
             let request = {
                 'method': 'POST',
                 'headers': headers,
@@ -169,9 +170,21 @@ class CurrentWeather extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        // let style = document.createElement('style');
-        // style.innerText = `:host(#shadow-dom-host) { display: flex; }`;
-        // this.shadowRoot.appendChild(style);
+        let style = document.createElement('style');
+        style.innerText = `:host(#shadow-dom-host) { 
+            display: flex; 
+        }
+        img {
+            height: var(--rating-widget-image-height, 7vh);
+        }
+        #container {
+            display: flex;
+            align-items: center;
+        }
+        #container > div {
+            margin-left: 1vw;
+        }`;
+        this.shadowRoot.appendChild(style);
     }
 
     connectedCallback() {
@@ -182,16 +195,29 @@ class CurrentWeather extends HTMLElement {
                 let image = document.createElement('img');
                 let div = document.createElement('div');
                 let another_div = document.createElement('div');
-                image.src = response.properties.periods[0].icon;
-                // short_description.style.display = 'inline';
-                short_description.innerHTML = response.properties.periods[0].shortForecast +' ' + response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit;
+                let short_forecast = response.properties.periods[0].shortForecast;
+                if(short_forecast === 'Sunny') {
+                    image.src = 'sunny.png';
+                    image.alt = 'Sunny weather icon';
+                } else if(short_forecast === 'Rain') {
+                    image.src = 'rain.png';
+                    image.alt = 'Rainy weather icon';
+                } else if(short_forecast === 'Cloudy') {
+                    image.src = 'cloud.png';
+                    image.alt = 'Cloudy weather icon';
+                } else if(short_forecast === 'Partly Cloudy') {
+                    image.src = 'partly_cloudy.png';
+                    image.alt = 'Partly Cloudy weather icon';
+                } else if(short_forecast === 'Thunder') {
+                    image.src = 'thunder.png';
+                    image.alt = 'Thunder weather icon';
+                }
+                div.id = 'container';
+                short_description.innerHTML = short_forecast +' ' + response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit;
                 let wind_description = document.createElement('p');
                 wind_description.innerHTML = response.properties.periods[0].windSpeed + ' ' + response.properties.periods[0].windDirection; 
                 div.appendChild(image);
                 div.appendChild(another_div);
-                div.style.display = 'flex';
-                div.style.alignItems = 'center';
-                another_div.style.marginLeft = '1vw';
                 div.querySelector('div').appendChild(short_description);
                 div.querySelector('div').appendChild(wind_description);
                 this.shadowRoot.appendChild(div);
