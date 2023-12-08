@@ -1,0 +1,48 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from '../layouts/Layout.astro';
+
+export const getStaticPaths = (() => {
+    return [         
+        {params: {number: 1}},
+        {params: {number: 2}},
+        {params: {number: 3}},
+        {params: {number: 4}},
+        {params: {number: 5}},
+        {params: {number: 6}},
+        {params: {number: 7}},
+        {params: {number: 8}},
+        {params: {number: 9}},
+        {params: {number: 10}},
+        {params: {number: 11}},
+        {params: {number: 12}},
+        {params: {number: 13}},
+        {params: {number: 14}},
+        {params: {number: 15}},
+        {params: {number: 16}},
+        {params: {number: 17}},
+        {params: {number: 18}},
+        {params: {number: 19}},
+        {params: {number: 20}},
+    ];
+});
+
+const { number } = Astro.params;
+---
+
+<Layout title="hi there luke">
+    <main>
+        <h1>Luke</h1>
+        <a href="/">&lt; Back to Main Page</a>
+        <p>{number}</p>
+    </main>
+</Layout>
+
+<style>
+    body {
+        color: white;
+    }
+    a {
+        color: white;
+    }
+</style>
