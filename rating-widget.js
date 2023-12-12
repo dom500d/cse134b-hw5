@@ -21,15 +21,18 @@ class RatingWidget extends HTMLElement {
         // console.log('We are connected');
         this.setStars();
         let style = document.createElement('style');
-        style.innerText = `span {
-                                font-size: ${this.star_size};
-                                color: ${this.star_color};
-                                cursor: pointer;
-                            }
-                            h3 {
+        style.innerText = ` h3 {
                                 font-size: ${this.heading_size};
                                 color: ${this.heading_color};
                                 margin: 0;
+                            }
+                            button {
+                                background: none;
+                                border: none;
+                                padding: 0;
+                                font-size: ${this.star_size};
+                                color: ${this.star_color};
+                                cursor: pointer;
                             }
                             `;
         this.shadowRoot.append(style);
@@ -78,9 +81,10 @@ class RatingWidget extends HTMLElement {
             star_holder.removeChild(star_holder.lastChild);
         }
         for(let i = 1; i <= this.max; i++) {
-            let new_star = document.createElement('span');
+            let new_star = document.createElement('button');
             new_star.id = `star${i}`;
             new_star.innerHTML = `&#9734;`;
+            new_star.ariaLabel = `${i} Star`;
             star_holder.appendChild(new_star);
         }
     }
@@ -89,7 +93,7 @@ class RatingWidget extends HTMLElement {
         let id = event.target.id;
         if(id.includes('star')) {
             let number = id.replace('star', '');
-            let star_list = this.querySelectorAll('span');
+            let star_list = this.querySelectorAll('button');
             for(let i = 0; i < star_list.length; i++) {
                 if(i < number) {
                     star_list[i].innerHTML = `&#9733;`;
@@ -122,19 +126,14 @@ class RatingWidget extends HTMLElement {
                 'headers': headers,
                 'body': form_data
             }
-            fetch('https://httpbin.org/post', {method: 'POST', headers: headers, body: form_data}).then((response) => response.json()).then((response) => console.log(response));
-            //Why am I getting this back? 
-            /*
-            "question"
-
-How satisfied are you?
-------WebKitFormBoundaryCspvqAnVdHskG5NX
-Content-Disposition: form-data; name="rating"
-
-7
-------WebKitFormBoundaryCspvqAnVdHskG5NX--
-
-            */
+            fetch('https://httpbin.org/post', {method: 'POST', headers: headers, body: form_data}).then((response) => {
+                // console.log(response);
+                if(response.status === 200) {
+                    return response.json();
+                } else {
+                    console.log(`httpbin.org didn't respond in with a 200 status code! UH OH!`);
+                } 
+            }).then((response) => console.log(response));
         }   
     }
 
@@ -142,7 +141,7 @@ Content-Disposition: form-data; name="rating"
         let id = event.target.id;
         if(id.includes('star')) {
             let number = id.replace('star', '');
-            let star_list = this.querySelectorAll('span');
+            let star_list = this.querySelectorAll('button');
             for(let i = 0; i < star_list.length; i++) {
                 if(i < number) {
                     star_list[i].innerHTML = `&#9733;`;
@@ -155,7 +154,7 @@ Content-Disposition: form-data; name="rating"
     }
 
     revertStar(event) {
-        let star_list = this.querySelectorAll('span');
+        let star_list = this.querySelectorAll('button');
         for(let i = 0; i < star_list.length; i++) {
             if(i < this.selected_rating) {
                 star_list[i].innerHTML = `&#9733;`;
@@ -166,88 +165,4 @@ Content-Disposition: form-data; name="rating"
     }
 }
 
-class CurrentWeather extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({mode: 'open'});
-        let style = document.createElement('style');
-        style.innerText = `:host { 
-            display: inline-flex; 
-            background-color: var(--rating-widget-background-color, #f2ffd1);
-            border-radius: var(--rating-widget-border-radius, 10px);
-            padding: var(--rating-widget-padding, 10px);
-        }
-        img {
-            height: var(--rating-widget-image-height, 7vh);
-        }
-        #container {
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-        }
-        #container > div {
-            margin-left: 1vw;
-        }
-        #outer-container {
-            display: flex;
-            flex-direction: column;
-        }
-        p {
-            max-width: 30vw;
-            font-family: var(--weather-widget-font, sans-serif);
-        }
-        `;
-        this.shadowRoot.appendChild(style);
-    }
-
-    connectedCallback() {
-        fetch('https://api.weather.gov/points/32.85490309481093,-117.24582925483772').then((resposne) => resposne.json()).then((response) => {
-            fetch(response.properties.forecast).then((response) => response.json()).then((response) => {
-                console.log(response.properties.periods[0]);
-                let short_description = document.createElement('p');
-                let image = document.createElement('img');
-                let div = document.createElement('div');
-                let another_div = document.createElement('div');
-                let another_another_div = document.createElement('div');
-                let long_description = document.createElement('p');
-                let short_forecast = response.properties.periods[0].shortForecast;
-                image.src = 'sunny.png';
-                image.alt = 'Sunny weather icon';
-                if(short_forecast === 'Sunny') {
-                    image.src = 'sunny.png';
-                    image.alt = 'Sunny weather icon';
-                } else if(short_forecast === 'Rain') {
-                    image.src = 'rain.png';
-                    image.alt = 'Rainy weather icon';
-                } else if(short_forecast === 'Cloudy') {
-                    image.src = 'cloud.png';
-                    image.alt = 'Cloudy weather icon';
-                } else if(short_forecast === 'Partly Cloudy') {
-                    image.src = 'partly_cloudy.png';
-                    image.alt = 'Partly Cloudy weather icon';
-                } else if(short_forecast === 'Thunder') {
-                    image.src = 'thunder.png';
-                    image.alt = 'Thunder weather icon';
-                }
-                div.id = 'outer-container';
-                short_description.innerHTML = response.properties.periods[0].temperature + '&#176;' + response.properties.periods[0].temperatureUnit + ', ' + short_forecast;
-                let wind_description = document.createElement('p');
-                wind_description.innerHTML = response.properties.periods[0].windSpeed + ' ' + response.properties.periods[0].windDirection; 
-                long_description.innerHTML = response.properties.periods[0].detailedForecast;
-                div.appendChild(image);
-                div.appendChild(another_div);
-                another_another_div.appendChild(image);
-                another_another_div.appendChild(another_div);
-                another_div.appendChild(short_description);
-                another_div.appendChild(wind_description);
-                div.appendChild(another_another_div);
-                div.appendChild(long_description);
-                another_another_div.id = 'container';
-                this.shadowRoot.appendChild(div);
-            });
-        });
-    }
-}
-
 window.customElements.define('rating-widget', RatingWidget);
-window.customElements.define('current-weather', CurrentWeather);
